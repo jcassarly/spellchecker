@@ -12,14 +12,19 @@ import java.io.IOException;
  */
 public class Dictionary {
     
+    // the root of the trie that hold ths words in the dictionary
     private Node root;
+    
+    // the number of words in the dictionary
     private int size;
+    
+    // the number of inserts that caused errors when loading the dictionary to memory
     private int errors;
     
     /**
      * Load in a text file that contains a dictionary - one word on each line
      * @param textFile the dictionary with one word per line
-     * @throws java.io.FileNotFoundException yup this happens if you give bad input - fight me lol // i should probably take this line out
+     * @throws IOException some error occurred in reading the file, most likely it didn't exist, but it may be corrupted too
      */
     public Dictionary(File textFile) throws IOException {
         root = new Node();
@@ -28,24 +33,44 @@ public class Dictionary {
         load(textFile);
     }
     
+    /**
+     * Loads a dictionary file into the trie -  the file must contain one word per line and nothing else
+     * @param textFile the dictionary file to load
+     * @throws IOException some error occurred in reading the file, most likely it didn't exist, but it may be corrupted too
+     */
     private void load(File textFile) throws IOException {
+        // open the file
         BufferedReader in = new BufferedReader(new FileReader(textFile));
         
+        // while file is readable
         while (in.ready()) {
+            // get the next word in the file
             String s = in.readLine();
+            // as long as the word is not just a new line character
             if (!s.equals("\n")) {
+                // insert the word
                 boolean noError = this.insert(s);
+                // if there was an error in inserting the word
                 if (!noError) {
+                    // print out the word
                     System.out.println(s);
+                    // increment the number of errors found during load
                     errors++;
                 }
+                // increment the size of the dictionary
                 size++;
             }
         }
         
+        // close the file
         in.close();
     }
     
+    /**
+     * Inserts a word into the trie
+     * @param newWord a String to insert (should contain only a-z and apostrophes, otherwise an error is thrown
+     * @return true is no errors, false otherwise
+     */
     public boolean insert(String newWord) {
         Node current = root;
         // run through the word to make sure all characters are valid

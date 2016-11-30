@@ -16,13 +16,13 @@ public class Spellchecker {
         //String dict = "a\nabs\ncandy";
         
         long starttime = System.currentTimeMillis();
-        Dictionary d = new Dictionary(new File("src/resources/large.txt"));
+        Dictionary d = new Dictionary(new File("src/resources/large.txt")); // http://www.gwicks.net/dictionaries.htm
         long endtime =  System.currentTimeMillis();
         
         long insert = endtime - starttime;
         
         starttime = System.currentTimeMillis();
-        System.out.println(d.checkDictionary("brian's"));
+        System.out.println(d.checkDictionary(""));
         endtime = System.currentTimeMillis();
         
         long check = endtime - starttime;
