@@ -14,8 +14,21 @@ public class Spellchecker {
      */
     public static void main(String[] args) throws IOException {
         //String dict = "a\nabs\ncandy";
-        Dictionary d = new Dictionary(new File("src/resources/dictionary84000.txt"));
-        System.out.println(d.checkDictionary("gerrymander"));
+        
+        long starttime = System.currentTimeMillis();
+        Dictionary d = new Dictionary(new File("src/resources/large.txt"));
+        long endtime =  System.currentTimeMillis();
+        
+        long insert = endtime - starttime;
+        
+        starttime = System.currentTimeMillis();
+        System.out.println(d.checkDictionary("brian's"));
+        endtime = System.currentTimeMillis();
+        
+        long check = endtime - starttime;
+        
+        System.out.println("Load: " + insert + ", Check: " + check);
+        
         System.out.println(d.getErrors());
     }
     

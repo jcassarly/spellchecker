@@ -52,7 +52,7 @@ public class Dictionary {
         boolean charsValid = true;
         for (int i = 0; i < newWord.length(); i++) {
             int index = getIndex(newWord.charAt(i));
-            if (index < 0 || index > 25) {
+            if (index < 0 || index > 26) {
                 charsValid = false;
                 i = newWord.length();
             }
@@ -102,7 +102,18 @@ public class Dictionary {
     }
     
     private int getIndex(char c) {
-        return c - 'a';
+        // if the character is a-z then return 0-25 based on position in alphabet
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a';
+        }
+        // if the character is an appostrophe return 26 (last element in node array)
+        else if (c == '\'') {
+            return 26;
+        }
+        // if the character is not a-z nor an apostrophe, return -1 to signify error
+        else {
+            return -1;
+        }
     }
     
     public int getSize() { 
@@ -120,13 +131,13 @@ public class Dictionary {
 
         public Node() {
             // set all values that indicate whether a word exists to false
-            wordExists = new boolean[26];
+            wordExists = new boolean[27];
             for (boolean e : wordExists) {
                 e = false;
             }
 
             // create the pointers to the next nodes
-            nexts = new Node[26];
+            nexts = new Node[27];
             // set them all to null to avoid infinite recursion
             for (Node e : nexts) {
                 e = null;
