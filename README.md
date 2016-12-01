@@ -11,14 +11,8 @@ The only specialized code we will use will be the java library with classes like
 
 #To-Do
 
-Add support for apostrophe characters
-
 Add support for possesives not in the dictionary
 
 Add support for reading a file in to spell check (use BufferedReader)
 
 Add support for reading a string to spell check
-
-Ad support for contractions when reading input string
-
-Add constructor to dictionary that accepts a string in addition to a file

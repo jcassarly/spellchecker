@@ -22,7 +22,7 @@ public class Spellchecker {
         long insert = endtime - starttime;
         
         starttime = System.currentTimeMillis();
-        System.out.println(d.checkDictionary(""));
+        System.out.println(d.checkDictionary("won't"));
         endtime = System.currentTimeMillis();
         
         long check = endtime - starttime;

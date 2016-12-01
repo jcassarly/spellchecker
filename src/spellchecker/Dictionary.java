@@ -2,13 +2,12 @@ package spellchecker;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 /**
  *
- * @author Jared Cassarly (jwc160)
+ * @author Jared Cassarly (jwc160) and Stephen Davis
  */
 public class Dictionary {
     
@@ -74,58 +73,77 @@ public class Dictionary {
     public boolean insert(String newWord) {
         Node current = root;
         // run through the word to make sure all characters are valid
-        boolean charsValid = true;
+        for (int i = 0; i < newWord.length(); i++) {
+            // get the index that the character would be in the node's array
+            int index = getIndex(newWord.charAt(i));
+            
+            // if the character indexes to not 0-26, the word is invalid and return false to show an error
+            if (index < 0 || index > 26) {
+                return false;
+            }
+        }
+        
+        // if all the characters are valid, insert the word
         for (int i = 0; i < newWord.length(); i++) {
             int index = getIndex(newWord.charAt(i));
-            if (index < 0 || index > 26) {
-                charsValid = false;
-                i = newWord.length();
-            }
-        }
-        // if all the characters are valid, insert the word
-        if (charsValid) {
-            for (int i = 0; i < newWord.length(); i++) {
-                int index = getIndex(newWord.charAt(i));
 
-                // if the current character is not the last one
-                if (i < newWord.length() - 1) {
-                    // go to the next node in the trie
-                    // if the next node is null, create one
-                    if (current.nexts[index] == null) {
-                        current.nexts[index] = new Node();
-                    }
-                    // set current to next
-                    current = current.nexts[index];
+            // if the current character is not the last one
+            if (i < newWord.length() - 1) {
+                // go to the next node in the trie
+                // if the next node is null, create one
+                if (current.nexts[index] == null) {
+                    current.nexts[index] = new Node();
                 }
-                // if the current character is the last idea in the string
-                else {
-                    current.wordExists[index] = true;
-                }
+                // set current to next
+                current = current.nexts[index];
             }
-            return true;
+            // if the current character is the last idea in the string
+            else {
+                current.wordExists[index] = true;
+            }
         }
-        // if the characters were not valid, show that an error has occured
-        else return false;
+        // the word was successfully inserted
+        return true;
     }
     
+    /**
+     * Check if a given word is in the dictionary
+     * @param word A string that contains exactly one word and only characters a-z and apostrophes
+     * @return true if the word exists in the dictionary, false otherwise
+     */
     public boolean checkDictionary(String word) {
         Node current = root;
+        // parse through the String word
         for (int i = 0; i < word.length(); i++) {
+            // get the index of the selected character in the node array
             int index = getIndex(word.charAt(i));
+            
+            // if the iteration is not at the last character
             if (i < word.length() - 1) {
+                // get the next node
                 Node next = current.nexts[index];
+                // if there is a next node, move to it
                 if (next != null) {
                     current = next;
                 }
+                // otherwise, the word does not exist as its path is longer than where it went in the dictionary
                 else return false;
             }
+            // if the iteration is on the last character
             else {
+                // return true if the value at the node index is true, false otherwise
                 return current.wordExists(index);
             }
         }
+        // somehow the loop exitted without a return statement in the middle of it and the word does not exist
         return false;
     }
     
+    /**
+     * Get the index of the character in the node array
+     * @param c a character to index
+     * @return 0-25 specifies that letter of the alphabet (0=a, 2=c, 25=z, etc), 26 represents the index for an apostrophe, -1 represents an invalid character that does not index
+     */
     private int getIndex(char c) {
         // if the character is a-z then return 0-25 based on position in alphabet
         if (c >= 'a' && c <= 'z') {
@@ -141,19 +159,36 @@ public class Dictionary {
         }
     }
     
+    /**
+     * Returns the number of words in the dictionary
+     * @return the number of words in the dictionary
+     */
     public int getSize() { 
         return size;
     }
     
+    /**
+     * Returns the number of errors encountered when entering words into the dictionary
+     * @return the number of errors encountered when entering words into the dictionary
+     */
     public int getErrors() {
         return errors;
     }
     
+    /**
+     * A node that contains an array of boolean values and pointers to other nodes all of length 27
+     * The trie data structure
+     */
     class Node {
 
+        // boolean values that indicate whether a word in the particular path exists
         private boolean[] wordExists;
+        // pointers to more nodes in the trie
         private Node[] nexts;
 
+        /**
+         * Creates a new Node in the trie
+         */
         public Node() {
             // set all values that indicate whether a word exists to false
             wordExists = new boolean[27];
@@ -169,15 +204,28 @@ public class Dictionary {
             }
         }
 
+        /**
+         * Returns the value in the wordExists array at the specified index
+         * @param index the index to check the value in the array
+         * @return the boolean value at the specified index
+         */
         public boolean wordExists(int index) {
+            // if the specified index is between 0 and 26
             if (index >= 0 && index < wordExists.length) {
+                // return the value at the index
                 return wordExists[index];
             }
+            // else return false
             else {
                 return false;
             }
         }
         
+        /**
+         * Set the value at a specific index of the wordExists array
+         * @param index the index to set the value of
+         * @param exists the value to set the index to
+         */
         public void setWordExistence(int index, boolean exists) {
             wordExists[index] = exists;
         }
