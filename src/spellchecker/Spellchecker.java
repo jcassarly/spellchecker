@@ -22,10 +22,10 @@ public class Spellchecker {
         long insert = endtime - starttime;
         
         starttime = System.currentTimeMillis();
-        System.out.println(d.checkDictionary("john"));
+        System.out.println(d.checkDictionary("trucks"));
         endtime = System.currentTimeMillis();
         
-        String[] s = d.findSuggestions("John");
+        String[] s = d.findSuggestions("tuck");
         for (int i = 0; i < s.length; i++) {
             System.out.println(s[i]);
         }
@@ -35,5 +35,7 @@ public class Spellchecker {
         System.out.println("Load: " + insert + ", Check: " + check);
         
         System.out.println(d.getErrors());
+        char c = 'a';
+        boolean x = Character.isAlphabetic(c) || c == '\'';
     }
 }

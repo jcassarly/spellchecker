@@ -114,7 +114,7 @@ public class Dictionary {
      */
     public boolean checkDictionary(String word) {
         Node current = root;
-        String check = word.toLowerCase();
+        String check = word.toLowerCase().trim();
         // parse through the String word
         for (int i = 0; i < check.length(); i++) {
             // get the index of the selected character in the node array
@@ -205,6 +205,48 @@ public class Dictionary {
                         suggestions.add(check);
                     }
                 }
+            }
+        }
+        
+        for (int i = 0; i < word.length(); i++) {
+            if (i < word.length() - 1) {
+                for (int j = 0; j < Node.NUM_VALID_CHARS; j++) {
+                    Character c = (char) ((j < 26) ? j + 'a' : '\'');
+
+                    // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
+                    // change the character in the word
+                    String check = word.substring(0, i) + c.toString() + ((i < word.length()) ? word.substring(i, word.length()) : "");
+
+                    // if the chenged word is in the dictionary, add it to the list of suggestions
+                    if (this.checkDictionary(check)) {
+                        suggestions.add(check);
+                    }
+                }
+            }
+            else {
+                for (int j = 0; j < Node.NUM_VALID_CHARS; j++) {
+                    Character c = (char) ((j < 26) ? j + 'a' : '\'');
+
+                    // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
+                    // change the character in the word
+                    String check = word + c;
+
+                    // if the chenged word is in the dictionary, add it to the list of suggestions
+                    if (this.checkDictionary(check)) {
+                        suggestions.add(check);
+                    }
+                }
+            }
+        }
+        
+        for (int i = 0; i < word.length(); i++) {
+            // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
+            // change the character in the word
+            String check = word.substring(0, i) +  ((i + 1 < word.length()) ? word.substring(i + 1, word.length()) : "");
+
+            // if the chenged word is in the dictionary, add it to the list of suggestions
+            if (this.checkDictionary(check)) {
+                suggestions.add(check);
             }
         }
         
