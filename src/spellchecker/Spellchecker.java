@@ -22,17 +22,23 @@ public class Spellchecker {
         long insert = endtime - starttime;
         
         starttime = System.currentTimeMillis();
-        System.out.println(d.checkDictionary("trucks"));
+        System.out.println(d.checkDictionary("bases"));
         endtime = System.currentTimeMillis();
         
-        String[] s = d.findSuggestions("tuck");
+        long check = endtime - starttime;
+        
+        starttime = System.currentTimeMillis();
+        String[] s = d.findSuggestions("bases");
+        endtime = System.currentTimeMillis();
+        
+        long suggest = endtime - starttime;
+        
         for (int i = 0; i < s.length; i++) {
             System.out.println(s[i]);
         }
         
-        long check = endtime - starttime;
         
-        System.out.println("Load: " + insert + ", Check: " + check);
+        System.out.println("Load: " + insert + ", Check: " + check + ", Suggestions: " + suggest);
         
         System.out.println(d.getErrors());
         char c = 'a';

@@ -181,14 +181,15 @@ public class Dictionary {
     }
     
     /**
-     * Finds all valid words with one character difference from the specified word and returns them in an array
+     * Finds all valid words with one character difference (characters added, subtracted, or changed in the word) from the specified word and returns them in an array
+     * Example: "bases" would return values including: "biases" (add a letter), "based" (change a letter), "base" (subtract a letter)
      * @param w The word to find suggestions for
      * @return an arrays of Strings that contains the suggestions for the word.  If the array length is 0, there are no suggestions
      */
     public String[] findSuggestions(String w) {
         ArrayList<String> suggestions = new ArrayList<>();
         String word = w.toLowerCase();
-        // parse through the word
+        // parse through the word - changing one letter in the word
         for (int i = 0; i < word.length(); i++) {
             // go through each possible character difference
             for (int j = 0; j < Node.NUM_VALID_CHARS; j++) {
@@ -208,30 +209,33 @@ public class Dictionary {
             }
         }
         
+        // parse through the word -  adding one letter to the word
         for (int i = 0; i < word.length(); i++) {
+            // if the loop is not on the last charcater
             if (i < word.length() - 1) {
+                // check words with one character added between current element and next element
                 for (int j = 0; j < Node.NUM_VALID_CHARS; j++) {
                     Character c = (char) ((j < 26) ? j + 'a' : '\'');
 
-                    // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
-                    // change the character in the word
+                    // add the character to the word
                     String check = word.substring(0, i) + c.toString() + ((i < word.length()) ? word.substring(i, word.length()) : "");
 
-                    // if the chenged word is in the dictionary, add it to the list of suggestions
+                    // if the new word is in the dictionary, add it to the list of suggestions
                     if (this.checkDictionary(check)) {
                         suggestions.add(check);
                     }
                 }
             }
+            // if the loop is on the last character
             else {
+                // check the words with one character added to the end of the word
                 for (int j = 0; j < Node.NUM_VALID_CHARS; j++) {
                     Character c = (char) ((j < 26) ? j + 'a' : '\'');
 
-                    // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
-                    // change the character in the word
+                    // add the character to the word
                     String check = word + c;
 
-                    // if the chenged word is in the dictionary, add it to the list of suggestions
+                    // if the new word is in the dictionary, add it to the list of suggestions
                     if (this.checkDictionary(check)) {
                         suggestions.add(check);
                     }
@@ -239,9 +243,9 @@ public class Dictionary {
             }
         }
         
+        // parse through the word -  removing one letter from the word
         for (int i = 0; i < word.length(); i++) {
-            // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
-            // change the character in the word
+            // remove the chracter at the selected index from the word
             String check = word.substring(0, i) +  ((i + 1 < word.length()) ? word.substring(i + 1, word.length()) : "");
 
             // if the chenged word is in the dictionary, add it to the list of suggestions
