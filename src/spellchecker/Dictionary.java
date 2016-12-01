@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  *
@@ -22,24 +23,24 @@ public class Dictionary {
     
     /**
      * Load in a text file that contains a dictionary - one word on each line
-     * @param textFile the dictionary with one word per line
+     * @param dictionary the dictionary with one word per line
      * @throws IOException some error occurred in reading the file, most likely it didn't exist, but it may be corrupted too
      */
-    public Dictionary(File textFile) throws IOException {
+    public Dictionary(File dictionary) throws IOException {
         root = new Node();
         size = 0;
         errors = 0;
-        load(textFile);
+        load(dictionary);
     }
     
     /**
      * Loads a dictionary file into the trie -  the file must contain one word per line and nothing else
-     * @param textFile the dictionary file to load
+     * @param dictionary the dictionary file to load
      * @throws IOException some error occurred in reading the file, most likely it didn't exist, but it may be corrupted too
      */
-    private void load(File textFile) throws IOException {
+    private void load(File dictionary) throws IOException {
         // open the file
-        BufferedReader in = new BufferedReader(new FileReader(textFile));
+        BufferedReader in = new BufferedReader(new FileReader(dictionary));
         
         // while file is readable
         while (in.ready()) {
@@ -113,13 +114,17 @@ public class Dictionary {
      */
     public boolean checkDictionary(String word) {
         Node current = root;
+        String check = word.toLowerCase();
         // parse through the String word
-        for (int i = 0; i < word.length(); i++) {
+        for (int i = 0; i < check.length(); i++) {
             // get the index of the selected character in the node array
-            int index = getIndex(word.charAt(i));
+            int index = getIndex(check.charAt(i));
+            if (index < 0) {
+                return false;
+            }
             
             // if the iteration is not at the last character
-            if (i < word.length() - 1) {
+            if (i < check.length() - 1) {
                 // get the next node
                 Node next = current.nexts[index];
                 // if there is a next node, move to it
@@ -176,10 +181,44 @@ public class Dictionary {
     }
     
     /**
+     * Finds all valid words with one character difference from the specified word and returns them in an array
+     * @param w The word to find suggestions for
+     * @return an arrays of Strings that contains the suggestions for the word.  If the array length is 0, there are no suggestions
+     */
+    public String[] findSuggestions(String w) {
+        ArrayList<String> suggestions = new ArrayList<>();
+        String word = w.toLowerCase();
+        // parse through the word
+        for (int i = 0; i < word.length(); i++) {
+            // go through each possible character difference
+            for (int j = 0; j < Node.NUM_VALID_CHARS; j++) {
+                // get the character that will change in the word
+                Character c = (char) ((j < 26) ? j + 'a' : '\'');
+                
+                // if the selected character is not the same as the character to change -  avoids getting the same word as a suggestion
+                if (c != word.charAt(i)) {
+                    // change the character in the word
+                    String check = word.substring(0, i) + c.toString() + ((i + 1 < word.length()) ? word.substring(i + 1, word.length()) : "");
+
+                    // if the chenged word is in the dictionary, add it to the list of suggestions
+                    if (this.checkDictionary(check)) {
+                        suggestions.add(check);
+                    }
+                }
+            }
+        }
+        
+        return suggestions.toArray(new String[suggestions.size()]);
+    }
+    
+    /**
      * A node that contains an array of boolean values and pointers to other nodes all of length 27
      * The trie data structure
      */
     class Node {
+        
+        // Length of the wordExists and nexts arrays
+        final private static int NUM_VALID_CHARS = 27;
 
         // boolean values that indicate whether a word in the particular path exists
         private boolean[] wordExists;
@@ -191,13 +230,13 @@ public class Dictionary {
          */
         public Node() {
             // set all values that indicate whether a word exists to false
-            wordExists = new boolean[27];
+            wordExists = new boolean[NUM_VALID_CHARS];
             for (boolean e : wordExists) {
                 e = false;
             }
 
             // create the pointers to the next nodes
-            nexts = new Node[27];
+            nexts = new Node[NUM_VALID_CHARS];
             // set them all to null to avoid infinite recursion
             for (Node e : nexts) {
                 e = null;

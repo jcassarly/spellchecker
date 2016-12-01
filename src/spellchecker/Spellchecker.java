@@ -22,8 +22,13 @@ public class Spellchecker {
         long insert = endtime - starttime;
         
         starttime = System.currentTimeMillis();
-        System.out.println(d.checkDictionary("won't"));
+        System.out.println(d.checkDictionary("john"));
         endtime = System.currentTimeMillis();
+        
+        String[] s = d.findSuggestions("John");
+        for (int i = 0; i < s.length; i++) {
+            System.out.println(s[i]);
+        }
         
         long check = endtime - starttime;
         
@@ -31,5 +36,4 @@ public class Spellchecker {
         
         System.out.println(d.getErrors());
     }
-    
 }
