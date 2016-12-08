@@ -80,7 +80,7 @@ public class Spellchecker {
      * @param d - Dictionary to check the input against
      * @throws IOException file was not found or was corrupted
      */
-    public static void readInput(File input,Dictionary d) throws IOException
+    public static String readInput(File input,Dictionary d) throws IOException
     {
         // create a new reader for the file
         BufferedReader in = new BufferedReader(new FileReader(input));
@@ -88,7 +88,7 @@ public class Spellchecker {
         // initialize the process to scan parse through the file
         String currentWord = "";
         int misspelled=0;
-        System.out.println("Mispelled words:");
+        String rtn = "Misspelled words: \n";
         
         // while there are characters left in the file
         while(in.ready())
@@ -98,10 +98,10 @@ public class Spellchecker {
             // if the character denotes the end of a word
             if((c==' '||c=='.'||c==','||c=='\n'||c=='\t'||c=='\r'||c=='"'||c==';'))
             {
-                // check if the current word that has been found is mispelled
+                // check if the current word that has been found is misspelled
                 if (isMisspelled(currentWord, d)) {
                     // print out the current word
-                    System.out.println(currentWord);
+                    rtn += currentWord + "\n";
                     
                     // increment the number of mispellings
                     misspelled++;
@@ -117,12 +117,14 @@ public class Spellchecker {
         
         // check the last word in the dictionary
         if (isMisspelled(currentWord, d)) {
-            System.out.println(currentWord);
+            rtn += currentWord + "\n";
             misspelled++;
         }
 
         // print out the number of mispellings
-        System.out.println("Number of mispelled words: "+misspelled);
+        System.out.println("Number of misspelled words: "+misspelled);
+        
+        return rtn;
     }
     
     /**
@@ -130,12 +132,12 @@ public class Spellchecker {
      * @param input - File containing the document to be checked
      * @param d - Dictionary to check the input against
      */
-    public static void readInput(String input, Dictionary d) 
+    public static String readInput(String input, Dictionary d) 
     {
         // gets ready to read the string
         String currentWord = "";
         int misspelled=0;
-        System.out.println("Mispelled words:");
+       String rtn = "Misspelled words: \n";
         
         // parse through the string character by character
         for(int i=0 ;i<input.length(); i++)
@@ -149,7 +151,7 @@ public class Spellchecker {
                 // check if the current word is misspelled
                 if (isMisspelled(currentWord, d)) {
                     // print out the misspelled word
-                    System.out.println(currentWord);
+                    rtn += "<" + currentWord + ">\n";
                     
                     // increment the number of misspellings in the string
                     misspelled++;
@@ -165,12 +167,14 @@ public class Spellchecker {
         
         // check the last word in the dictionary
         if (isMisspelled(currentWord, d)) {
-            System.out.println(currentWord);
+            rtn += currentWord + "\n";
             misspelled++;
         }
 
         // print out the number of mispellings
-        System.out.println("Number of mispelled words: "+misspelled);
+        System.out.println("Number of misspelled words: "+misspelled);
+        
+        return rtn;
     }
     
     /**
@@ -200,7 +204,7 @@ public class Spellchecker {
             // also, there is no need to check if the possessive form of the word is in the dictionary because all words with an "'s" or "s'" are words without those characters on the end
             return (!d.checkDictionary(currentWord)); 
         }
-        // if the word is an empty string it is not mispelled
+        // if the word is an empty string it is not misspelled
         else return false;
     }
     

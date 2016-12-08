@@ -186,7 +186,7 @@ public class Dictionary {
      * @param w The word to find suggestions for
      * @return an arrays of Strings that contains the suggestions for the word.  If the array length is 0, there are no suggestions
      */
-    public String[] findSuggestions(String w) {
+    public String[][] findSuggestions(String w) {
         ArrayList<String> suggestions = new ArrayList<>();
         String word = w.toLowerCase();
         // parse through the word - changing one letter in the word
@@ -254,7 +254,12 @@ public class Dictionary {
             }
         }
         
-        return suggestions.toArray(new String[suggestions.size()]);
+        String[][] rtn = new String[suggestions.size()][1];
+        for (int i = 0, n = suggestions.size(); i < n; i++) {
+            rtn[i][0] = suggestions.get(i);
+        }
+        
+        return rtn;
     }
     
     /**

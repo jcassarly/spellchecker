@@ -1,12 +1,15 @@
 package gui;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import spellchecker.Spellchecker;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.table.DefaultTableModel;
 import spellchecker.Dictionary;
 
 /**
@@ -48,6 +51,8 @@ public class Welcome extends javax.swing.JFrame {
         stringCheck = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         textAreaLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        suggestionsTable = new javax.swing.JTable();
 
         jButton2.setText("jButton2");
 
@@ -81,6 +86,9 @@ public class Welcome extends javax.swing.JFrame {
 
         textAreaLabel.setText("Enter some text to spell check:");
 
+        suggestionsTable.setModel(getSuggestions());
+        jScrollPane2.setViewportView(suggestionsTable);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -88,22 +96,25 @@ public class Welcome extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(fileCheck)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 905, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(stringCheck)
-                                    .addComponent(textAreaLabel))
-                                .addGap(0, 0, Short.MAX_VALUE)))))
-                .addContainerGap())
+                                    .addComponent(textAreaLabel)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 778, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 212, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(title, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -115,7 +126,9 @@ public class Welcome extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(textAreaLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 482, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 482, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(stringCheck)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -127,8 +140,19 @@ public class Welcome extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void stringCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stringCheckActionPerformed
-        //String spellChecked = sc.spellCheck(enterString.getText());
-        //enterString.setText(spellChecked);
+        String spellChecked = Spellchecker.readInput(enterString.getText(), dict);
+        enterString.setText(spellChecked);
+        String s = enterString.getText();
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '<') {
+                enterString.setSelectionStart(i+1);
+            }
+            else if (s.charAt(i) == '>') {
+                enterString.setSelectionEnd(i);
+                suggestionsTable.setModel(getSuggestions(dict.findSuggestions(enterString.getSelectedText())));
+            }
+            
+        }
     }//GEN-LAST:event_stringCheckActionPerformed
 
     private void fileCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileCheckActionPerformed
@@ -138,7 +162,8 @@ public class Welcome extends javax.swing.JFrame {
         int actionVal = jfc.showOpenDialog(this);
         if (actionVal == JFileChooser.APPROVE_OPTION) {
             try {
-                Spellchecker.readInput(jfc.getSelectedFile(), dict);
+                String text = Spellchecker.readInput(jfc.getSelectedFile(), dict);
+                enterString.setText(text);
             } catch (IOException ex) {
                 Logger.getLogger(Welcome.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -183,7 +208,28 @@ public class Welcome extends javax.swing.JFrame {
             }
         });
     }
-
+    
+    private DefaultTableModel getSuggestions() {
+        DefaultTableModel model = new javax.swing.table.DefaultTableModel(
+            new Object [][] {},
+            new String [] {
+                "Suggestions"
+            }
+        );
+        return model;      
+    }
+    
+    private DefaultTableModel getSuggestions(String[][] suggestions) {
+        DefaultTableModel model = new javax.swing.table.DefaultTableModel(
+            suggestions,
+            new String [] {
+                "Suggestions"
+            }
+        );
+        return model;      
+    }
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea enterString;
     private javax.swing.JButton fileCheck;
@@ -191,7 +237,9 @@ public class Welcome extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton stringCheck;
+    private javax.swing.JTable suggestionsTable;
     private javax.swing.JLabel textAreaLabel;
     private javax.swing.JLabel title;
     // End of variables declaration//GEN-END:variables
