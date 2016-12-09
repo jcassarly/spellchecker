@@ -25,7 +25,7 @@ public class Spellchecker {
         Dictionary d = new Dictionary(new File("src/resources/large.txt"));//S.nextLine())); // Please use the file path for the large.txt file
         
         //chooses to use the readInput method with a String or a File parameter based on user input in the setup funtion
-        if(setup())
+        /*if(setup())
         {
             //gets the file path from the user and sets up the file that is inputed to readInput
             System.out.println("Enter file path:");
@@ -40,7 +40,10 @@ public class Spellchecker {
             in = S.nextLine();
             
             readInput(in,d);
-        }
+        }*/
+        String test = "This is, adsffes a jwefk test.";
+        File input = new File ("src/resources/input.txt");
+        System.out.println(readInput(input,d));
     }
     
     /**
@@ -87,8 +90,8 @@ public class Spellchecker {
         
         // initialize the process to scan parse through the file
         String currentWord = "";
+        String currentString = "";
         int misspelled=0;
-        String rtn = "Misspelled words: \n";
         
         // while there are characters left in the file
         while(in.ready())
@@ -100,15 +103,21 @@ public class Spellchecker {
             {
                 // check if the current word that has been found is misspelled
                 if (isMisspelled(currentWord, d)) {
-                    // print out the current word
-                    rtn += currentWord + "\n";
-                    
+                   // puts carrots around the misspelled word
+                    currentString+="<" + currentWord + ">";
                     // increment the number of mispellings
                     misspelled++;
+                }
+                // check if the current word is spelled correctly and not empty
+                else if(!currentWord.equals(""))
+                {
+                    currentString+=currentWord;
                 }
                 
                 // reset the current word
                 currentWord="";
+                // add the current non alphabetic character to te string
+                currentString+=c;
             }
             // if the character is a valid charcater for a word (a-z or apostrophe) add the character to the current word
             else if(Character.isAlphabetic(c)||c=='\'')
@@ -117,14 +126,17 @@ public class Spellchecker {
         
         // check the last word in the dictionary
         if (isMisspelled(currentWord, d)) {
-            rtn += currentWord + "\n";
+            currentString+="<" + currentWord + ">";
             misspelled++;
+        }
+        else {
+            currentString+=currentWord;
         }
 
         // print out the number of mispellings
         System.out.println("Number of misspelled words: "+misspelled);
         
-        return rtn;
+        return currentString;
     }
     
     /**
@@ -135,9 +147,9 @@ public class Spellchecker {
     public static String readInput(String input, Dictionary d) 
     {
         // gets ready to read the string
+        String currentString="";
         String currentWord = "";
         int misspelled=0;
-       String rtn = "Misspelled words: \n";
         
         // parse through the string character by character
         for(int i=0 ;i<input.length(); i++)
@@ -148,17 +160,24 @@ public class Spellchecker {
             // if the character denotes the end of a word
             if((c==' '||c=='.'||c==','||c=='\n'||c=='\t'||c=='\r'||c=='"'||c==';'))
             {
+                
                 // check if the current word is misspelled
                 if (isMisspelled(currentWord, d)) {
-                    // print out the misspelled word
-                    rtn += "<" + currentWord + ">\n";
-                    
+                    // puts carrots around the misspelled word
+                    currentString+="<" + currentWord + ">";
                     // increment the number of misspellings in the string
                     misspelled++;
+                }
+                // check if the current word is spelled correctly and not empty
+                else if(!currentWord.equals(""))
+                {
+                    currentString+=currentWord;
                 }
                 
                 // reset the current word
                 currentWord="";
+                // add the current non alphabetic character to te string
+                currentString+=c;
             }
             // if the character is a valid charcater for a word (a-z or apostrophe) add the character to the current word
             else if(Character.isAlphabetic(c)||c=='\'')
@@ -167,18 +186,21 @@ public class Spellchecker {
         
         // check the last word in the dictionary
         if (isMisspelled(currentWord, d)) {
-            rtn += currentWord + "\n";
+            currentString+="<" + currentWord + ">";
             misspelled++;
+        }
+        else {
+            currentString+=currentWord;
         }
 
         // print out the number of mispellings
         System.out.println("Number of misspelled words: "+misspelled);
         
-        return rtn;
+        return currentString;
     }
     
     /**
-     * Check if a word is miseplled in the dictionary
+     * Check if a word is misspelled in the dictionary
      * @param currentWord the word to check if it is in the dictionary (should contain characters a-z and or apostrophes
      * @param d the dictionary to check if the word is in
      * @return true if the word is not in the dictionary, false if the word is in the dictionary or it is an empty string
